@@ -5,10 +5,14 @@
         <Nullable>enable</Nullable>
         <LangVersion>13</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Title>TranslateSharp</Title>
+        <Title>TranslateSharp.Abstractions</Title>
         <Version>1.0.0</Version>
         <Authors>Josué Clément</Authors>
     </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="CsharpExtensions" Version="1.0.0" />
+    </ItemGroup>
 
     <!-- Readme for the NuGet package -->
     <PropertyGroup>
@@ -19,14 +23,6 @@
     <ItemGroup>
         <None Include="..\README.md" Pack="true" PackagePath="\" />
         <None Include="..\LICENSE.txt" Pack="true" PackagePath="\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\TranslateSharp.Abstractions\TranslateSharp.Abstractions.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="CsharpExtensions" Version="1.0.0" />
     </ItemGroup>
 
 </Project>
