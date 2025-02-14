@@ -10,7 +10,6 @@ namespace TranslateSharp;
 /// <summary>
 /// Database translation repository implementation
 /// </summary>
-// ReSharper disable once InconsistentNaming
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public class DatabaseTranslationRepository : ITranslationRepository
 {
