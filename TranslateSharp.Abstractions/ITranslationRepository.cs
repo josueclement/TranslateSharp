@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CsharpExtensions;
 
 namespace TranslateSharp.Abstractions;
 
@@ -12,30 +11,30 @@ public interface ITranslationRepository
     /// <summary>
     /// Asynchronously get all translations
     /// </summary>
-    Task<ValueResult<IEnumerable<ITranslation>>> GetAllTranslationsAsync();
+    Task<IEnumerable<ITranslation>> GetAllTranslationsAsync();
     
     /// <summary>
     /// Asynchronously get translations by their key
     /// </summary>
-    Task<ValueResult<IEnumerable<ITranslation>>> GetTranslationsAsync(string key);
+    Task<IEnumerable<ITranslation>> GetTranslationsAsync(string key);
     
     /// <summary>
     /// Asynchronously get translation by its key and language
     /// </summary>
-    Task<ValueResult<ITranslation>> GetTranslationAsync(string key, string language);
+    Task<ITranslation> GetTranslationAsync(string key, string language);
     
     /// <summary>
     /// Asynchronously add a translation
     /// </summary>
-    Task<Result<bool>> AddTranslationAsync(ITranslation translation);
+    Task<int> AddTranslationAsync(ITranslation translation);
     
     /// <summary>
     /// Asynchronously delete a translation
     /// </summary>
-    Task<Result<bool>> DeleteTranslationAsync(ITranslation translation);
+    Task<int> DeleteTranslationAsync(ITranslation translation);
     
     /// <summary>
     /// Asynchronously update a translation
     /// </summary>
-    Task<Result<bool>> UpdateTranslationAsync(ITranslation translation);
+    Task<int> UpdateTranslationAsync(ITranslation translation);
 }

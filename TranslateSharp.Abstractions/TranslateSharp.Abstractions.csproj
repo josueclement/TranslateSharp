@@ -10,10 +10,6 @@
         <Authors>Josué Clément</Authors>
     </PropertyGroup>
     
-    <ItemGroup>
-        <PackageReference Include="CsharpExtensions" Version="1.0.0" />
-    </ItemGroup>
-
     <!-- Readme for the NuGet package -->
     <PropertyGroup>
         <PackageReadmeFile>README.md</PackageReadmeFile>
