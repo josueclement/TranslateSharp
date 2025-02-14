@@ -139,26 +139,26 @@ public class DatabaseTranslationRepository : ITranslationRepository
     }
     
     /// <inheritdoc />
-    public async Task<IEnumerable<ITranslation>> GetAllTranslationsAsync()
-        => await Query<ITranslation>("SELECT Key, Language, Text FROM Translations");
+    public async Task<IEnumerable<Translation>> GetAllTranslationsAsync()
+        => await Query<Translation>("SELECT Key, Language, Text FROM Translations");
 
     /// <inheritdoc />
-    public async Task<IEnumerable<ITranslation>> GetTranslationsAsync(string key)
-        => await Query<ITranslation>("SELECT Key, Language, Text FROM Translations WHERE Key = @Key", key);
+    public async Task<IEnumerable<Translation>> GetTranslationsAsync(string key)
+        => await Query<Translation>("SELECT Key, Language, Text FROM Translations WHERE Key = @Key", key);
 
     /// <inheritdoc />
-    public async Task<ITranslation> GetTranslationAsync(string key, string language)
-        => await QueryFirst<ITranslation>("SELECT Key, Language, Text FROM Translations WHERE Key = @Key AND Language = @Language", key, language);
+    public async Task<Translation> GetTranslationAsync(string key, string language)
+        => await QueryFirst<Translation>("SELECT Key, Language, Text FROM Translations WHERE Key = @Key AND Language = @Language", key, language);
 
     /// <inheritdoc />
-    public async Task<int> AddTranslationAsync(ITranslation translation)
+    public async Task<int> AddTranslationAsync(Translation translation)
         => await Execute("INSERT INTO Translations (Key, Language, Text) VALUES (@Key, @Language, @Text)", translation);
 
     /// <inheritdoc />
-    public async Task<int> DeleteTranslationAsync(ITranslation translation)
+    public async Task<int> DeleteTranslationAsync(Translation translation)
         => await Execute("DELETE FROM Translations WHERE Key = @Key AND Language = @Language", translation);
 
     /// <inheritdoc />
-    public async Task<int> UpdateTranslationAsync(ITranslation translation)
+    public async Task<int> UpdateTranslationAsync(Translation translation)
         => await Execute("UPDATE Translations SET Text = @Text WHERE Key = @Key AND Language = @Language", translation);
 }

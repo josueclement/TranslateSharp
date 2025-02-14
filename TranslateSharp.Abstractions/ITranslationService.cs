@@ -11,30 +11,30 @@ public interface ITranslationService
     /// <summary>
     /// Asynchronously get all translations
     /// </summary>
-    Task<IEnumerable<ITranslation>> GetAllTranslationsAsync();
+    Task<IEnumerable<Translation>> GetAllTranslationsAsync();
     
     /// <summary>
     /// Asynchronously get translations by their key
     /// </summary>
-    Task<IEnumerable<ITranslation>> GetTranslationsAsync(string key);
+    Task<IEnumerable<Translation>> GetTranslationsAsync(string key);
     
     /// <summary>
     /// Asynchronously get translation by its key and language
     /// </summary>
-    Task<ITranslation> GetTranslationAsync(string key, string language);
+    Task<Translation> GetTranslationAsync(string key, string language);
     
     /// <summary>
     /// Asynchronously add a translation
     /// </summary>
-    Task<int> AddTranslationAsync(ITranslation translation);
+    Task<int> AddTranslationAsync(Translation translation);
     
     /// <summary>
     /// Asynchronously delete a translation
     /// </summary>
-    Task<int> DeleteTranslationAsync(ITranslation translation);
+    Task<int> DeleteTranslationAsync(Translation translation);
     
     /// <summary>
     /// Asynchronously update a translation
     /// </summary>
-    Task<int> UpdateTranslationAsync(ITranslation translation);
+    Task<int> UpdateTranslationAsync(Translation translation);
 }
