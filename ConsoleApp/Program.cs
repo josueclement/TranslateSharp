@@ -18,7 +18,7 @@ internal static class Program
     static void ConfigureServices()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<ITranslationRepository, DatabaseTranslationRepository>();
+        services.AddTransient<ITranslationRepository, DatabaseTranslationRepository>();
         services.AddSingleton<ITranslationRepositoryFactory, TranslationRepositoryFactory>(); 
         _serviceProvider = services.BuildServiceProvider();
     }
