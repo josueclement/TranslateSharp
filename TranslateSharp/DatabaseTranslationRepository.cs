@@ -16,12 +16,6 @@ public class DatabaseTranslationRepository : ITranslationRepository
 {
     private readonly DbProviderFactory _factory;
     private readonly string _connectionString;
-    //
-    // static DatabaseTranslationRepository()
-    // {
-    //     DbProviderFactories.RegisterFactory("System.Data.SQLite", SQLiteFactory.Instance);
-    //     Factory = DbProviderFactories.GetFactory("System.Data.SQLite");
-    // }
 
     // ReSharper disable once ConvertToPrimaryConstructor
     public DatabaseTranslationRepository(DbProviderFactory factory, string connectionString)
@@ -44,7 +38,7 @@ public class DatabaseTranslationRepository : ITranslationRepository
     /// <inheritdoc />
     public async Task<IEnumerable<Translation>> GetAllTranslationsAsync()
     {
-        await using DbConnection connection = GetConnection();
+        await using var connection = GetConnection();
         await connection.OpenAsync(); 
         return await connection.QueryAsync<Translation>("SELECT Key, Language, Text FROM Translations");
     }
@@ -52,7 +46,7 @@ public class DatabaseTranslationRepository : ITranslationRepository
     /// <inheritdoc />
     public async Task<IEnumerable<Translation>> GetTranslationsAsync(string key)
     {
-        await using DbConnection connection = GetConnection();
+        await using var connection = GetConnection();
         await connection.OpenAsync();
         return await connection.QueryAsync<Translation>("SELECT Key, Language, Text FROM Translations WHERE Key = @Key", key);
     }
@@ -60,7 +54,7 @@ public class DatabaseTranslationRepository : ITranslationRepository
     /// <inheritdoc />
     public async Task<Translation?> GetTranslationAsync(string key, string language)
     {
-        await using DbConnection connection = GetConnection();
+        await using var connection = GetConnection();
         await connection.OpenAsync();
 
         var parameters = new DynamicParameters();
@@ -73,7 +67,7 @@ public class DatabaseTranslationRepository : ITranslationRepository
     /// <inheritdoc />
     public async Task<int> AddTranslationAsync(Translation translation)
     {
-        await using DbConnection connection = GetConnection();
+        await using var connection = GetConnection();
         await connection.OpenAsync();
         return await connection.ExecuteAsync("INSERT INTO Translations (Key, Language, Text) VALUES (@Key, @Language, @Text)", translation);
     }
@@ -81,7 +75,7 @@ public class DatabaseTranslationRepository : ITranslationRepository
     /// <inheritdoc />
     public async Task<int> DeleteTranslationAsync(Translation translation)
     {
-        await using DbConnection connection = GetConnection();
+        await using var connection = GetConnection();
         await connection.OpenAsync();
         return await connection.ExecuteAsync("DELETE FROM Translations WHERE Key = @Key AND Language = @Language", translation);
     }
@@ -89,7 +83,7 @@ public class DatabaseTranslationRepository : ITranslationRepository
     /// <inheritdoc />
     public async Task<int> UpdateTranslationAsync(Translation translation)
     {
-        await using DbConnection connection = GetConnection();
+        await using var connection = GetConnection();
         await connection.OpenAsync();
         return await connection.ExecuteAsync("UPDATE Translations SET Text = @Text WHERE Key = @Key AND Language = @Language", translation);
     }
