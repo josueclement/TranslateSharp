@@ -40,125 +40,110 @@ public class DatabaseTranslationRepository : ITranslationRepository
         return connection;
     }
 
-    private async Task<IEnumerable<T>> Query<T>(string query)
-    {
-        DbConnection? connection = null;
-        
-        try
-        {
-            connection = GetConnection();
-            await connection.OpenAsync();
-            
-            return await connection.QueryAsync<T>(query);
-        }
-        finally
-        {
-            if (connection is not null)
-            {
-                await connection.CloseAsync();
-                await connection.DisposeAsync();
-            }
-        }
-    }
-
-    private DynamicParameters GetDynamicParameters(object[] parameters)
-    {
-        var dynamicParameters = new DynamicParameters();
-        foreach (var param in parameters)
-            dynamicParameters.AddDynamicParams(param);
-        return dynamicParameters;
-    }
-
-    private async Task<IEnumerable<T>> Query<T>(string query, params object[] parameters)
-    {
-        DbConnection? connection = null;
-        
-        try
-        {
-            connection = GetConnection();
-            await connection.OpenAsync();
-            
-            var dynamicParameters = GetDynamicParameters(parameters);
-            
-            return await connection.QueryAsync<T>(query, dynamicParameters);
-        }
-        finally
-        {
-            if (connection is not null)
-            {
-                await connection.CloseAsync();
-                await connection.DisposeAsync();
-            }
-        }
-    }
-
-    private async Task<T> QueryFirst<T>(string query, params object[] parameters)
-    {
-        DbConnection? connection = null;
-        
-        try
-        {
-            connection = GetConnection();
-            await connection.OpenAsync();
-            
-            var dynamicParameters = GetDynamicParameters(parameters);
-
-            return await connection.QueryFirstAsync<T>(query, dynamicParameters);
-        }
-        finally
-        {
-            if (connection is not null)
-            {
-                await connection.CloseAsync();
-                await connection.DisposeAsync();
-            }
-        } 
-    }
-
-    private async Task<int> Execute(string query, params object[] parameters)
-    {
-        DbConnection? connection = null;
-        
-        try
-        {
-            connection = GetConnection();
-            await connection.OpenAsync();
-            
-            var dynamicParameters = GetDynamicParameters(parameters);
-
-            return await connection.ExecuteAsync(query, dynamicParameters);
-        }
-        finally
-        {
-            if (connection is not null)
-            {
-                await connection.CloseAsync();
-                await connection.DisposeAsync();
-            }
-        } 
-    }
-    
     /// <inheritdoc />
     public async Task<IEnumerable<Translation>> GetAllTranslationsAsync()
-        => await Query<Translation>("SELECT Key, Language, Text FROM Translations");
+    {
+        DbConnection connection = GetConnection();
+        
+        try
+        {
+            await connection.OpenAsync();
+            return await connection.QueryAsync<Translation>("SELECT Key, Language, Text FROM Translations");
+        }
+        finally
+        {
+            await connection.CloseAsync();
+            await connection.DisposeAsync();
+        }
+    }
 
     /// <inheritdoc />
     public async Task<IEnumerable<Translation>> GetTranslationsAsync(string key)
-        => await Query<Translation>("SELECT Key, Language, Text FROM Translations WHERE Key = @Key", key);
+    {
+        DbConnection connection = GetConnection();
+        
+        try
+        {
+            await connection.OpenAsync();
+            return await connection.QueryAsync<Translation>("SELECT Key, Language, Text FROM Translations WHERE Key = @Key", key);
+        }
+        finally
+        {
+            await connection.CloseAsync();
+            await connection.DisposeAsync();
+        }
+    }
 
     /// <inheritdoc />
-    public async Task<Translation> GetTranslationAsync(string key, string language)
-        => await QueryFirst<Translation>("SELECT Key, Language, Text FROM Translations WHERE Key = @Key AND Language = @Language", key, language);
+    public async Task<Translation?> GetTranslationAsync(string key, string language)
+    {
+        DbConnection connection = GetConnection();
+        
+        try
+        {
+            await connection.OpenAsync();
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Key", key);
+            parameters.Add("@Language", language);
+            
+            return await connection.QueryFirstOrDefaultAsync<Translation>("SELECT Key, Language, Text FROM Translations WHERE Key = @Key AND Language = @Language", parameters);
+        }
+        finally
+        {
+            await connection.CloseAsync();
+            await connection.DisposeAsync();
+        } 
+    }
 
     /// <inheritdoc />
     public async Task<int> AddTranslationAsync(Translation translation)
-        => await Execute("INSERT INTO Translations (Key, Language, Text) VALUES (@Key, @Language, @Text)", translation);
+    {
+        DbConnection connection = GetConnection();
+        
+        try
+        {
+            await connection.OpenAsync();
+            return await connection.ExecuteAsync("INSERT INTO Translations (Key, Language, Text) VALUES (@Key, @Language, @Text)", translation);
+        }
+        finally
+        {
+            await connection.CloseAsync();
+            await connection.DisposeAsync();
+        } 
+    }
 
     /// <inheritdoc />
     public async Task<int> DeleteTranslationAsync(Translation translation)
-        => await Execute("DELETE FROM Translations WHERE Key = @Key AND Language = @Language", translation);
+    {
+        DbConnection connection = GetConnection();
+        
+        try
+        {
+            await connection.OpenAsync();
+            return await connection.ExecuteAsync("DELETE FROM Translations WHERE Key = @Key AND Language = @Language", translation);
+        }
+        finally
+        {
+            await connection.CloseAsync();
+            await connection.DisposeAsync();
+        } 
+    }
 
     /// <inheritdoc />
     public async Task<int> UpdateTranslationAsync(Translation translation)
-        => await Execute("UPDATE Translations SET Text = @Text WHERE Key = @Key AND Language = @Language", translation);
+    {
+        DbConnection connection = GetConnection();
+        
+        try
+        {
+            await connection.OpenAsync();
+            return await connection.ExecuteAsync("UPDATE Translations SET Text = @Text WHERE Key = @Key AND Language = @Language", translation);
+        }
+        finally
+        {
+            await connection.CloseAsync();
+            await connection.DisposeAsync();
+        } 
+    }
 }

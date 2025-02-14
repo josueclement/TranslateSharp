@@ -21,7 +21,7 @@ public interface ITranslationRepository
     /// <summary>
     /// Asynchronously get translation by its key and language
     /// </summary>
-    Task<Translation> GetTranslationAsync(string key, string language);
+    Task<Translation?> GetTranslationAsync(string key, string language);
     
     /// <summary>
     /// Asynchronously add a translation

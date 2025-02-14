@@ -21,20 +21,20 @@ public interface ITranslationService
     /// <summary>
     /// Asynchronously get translation by its key and language
     /// </summary>
-    Task<Translation> GetTranslationAsync(string key, string language);
+    Task<Translation?> GetTranslationAsync(string key, string language);
     
     /// <summary>
     /// Asynchronously add a translation
     /// </summary>
-    Task<int> AddTranslationAsync(Translation translation);
+    Task<bool> AddTranslationAsync(Translation translation);
     
     /// <summary>
     /// Asynchronously delete a translation
     /// </summary>
-    Task<int> DeleteTranslationAsync(Translation translation);
+    Task<bool> DeleteTranslationAsync(Translation translation);
     
     /// <summary>
     /// Asynchronously update a translation
     /// </summary>
-    Task<int> UpdateTranslationAsync(Translation translation);
+    Task<bool> UpdateTranslationAsync(Translation translation);
 }
