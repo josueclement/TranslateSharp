@@ -46,14 +46,14 @@ internal static class Program
             services.AddSingleton<ITranslationRepository>(sp =>
                 sp.GetRequiredService<ITranslationRepositoryFactory>()
                     .CreateDatabaseRepository(
-                        DbProviderFactories.GetFactory(configuration.GetValue<string>("Database:Provider")),
-                        configuration.GetValue<string>("Database:ConnectionString")));
+                        DbProviderFactories.GetFactory(configuration.GetRequiredValue<string>("Database:Provider")),
+                        configuration.GetRequiredValue<string>("Database:ConnectionString")));
         }
         else if (configuration.GetValue<string>("General:TranslationRepositoryType") == "JsonFile")
         {
             services.AddSingleton<ITranslationRepository>(sp =>
                 sp.GetRequiredService<ITranslationRepositoryFactory>()
-                    .CreateJsonFileRepository(configuration.GetValue<string>("TranslationRepositoryJsonFile")));
+                    .CreateJsonFileRepository(configuration.GetRequiredValue<string>("TranslationRepositoryJsonFile")));
         }
         // services.AddTransient<ITranslationRepository, DatabaseTranslationRepository>();
         _serviceProvider = services.BuildServiceProvider();
@@ -93,4 +93,10 @@ internal static class Program
             Console.WriteLine(ex);
         }
     }
+}
+
+public static class ConfigurationExtensions
+{
+    public static T GetRequiredValue<T>(this IConfiguration configuration, string key)
+        => configuration.GetValue<T>(key) ?? throw new InvalidOperationException($"Missing required value for key: {key}");
 }
