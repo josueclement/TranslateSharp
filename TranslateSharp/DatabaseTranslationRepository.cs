@@ -7,6 +7,13 @@ using TranslateSharp.Abstractions;
 
 namespace TranslateSharp;
 
+// CREATE TABLE Translations (
+//     Key TEXT NOT NULL,
+//     Language TEXT NOT NULL,
+//     Text TEXT NOT NULL,
+//     PRIMARY KEY (Key, Language)
+// );
+
 /// <summary>
 /// Database translation repository implementation
 /// </summary>
