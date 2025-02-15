@@ -40,8 +40,22 @@ internal static class Program
         
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configuration);
-        services.AddTransient<ITranslationRepository, DatabaseTranslationRepository>();
         services.AddSingleton<ITranslationRepositoryFactory, TranslationRepositoryFactory>();
+        if (configuration.GetValue<string>("General:TranslationRepositoryType") == "Database")
+        {
+            services.AddSingleton<ITranslationRepository>(sp =>
+                sp.GetRequiredService<ITranslationRepositoryFactory>()
+                    .CreateDatabaseRepository(
+                        DbProviderFactories.GetFactory(configuration.GetValue<string>("Database:Provider")),
+                        configuration.GetValue<string>("Database:ConnectionString")));
+        }
+        else if (configuration.GetValue<string>("General:TranslationRepositoryType") == "JsonFile")
+        {
+            services.AddSingleton<ITranslationRepository>(sp =>
+                sp.GetRequiredService<ITranslationRepositoryFactory>()
+                    .CreateJsonFileRepository(configuration.GetValue<string>("TranslationRepositoryJsonFile")));
+        }
+        // services.AddTransient<ITranslationRepository, DatabaseTranslationRepository>();
         _serviceProvider = services.BuildServiceProvider();
     }
 
@@ -66,7 +80,8 @@ internal static class Program
             var dbFactory = DbProviderFactories.GetFactory(DatabaseProvider);
 
             var repositoryFactory = ServiceProvider.GetRequiredService<ITranslationRepositoryFactory>();
-            var repository = repositoryFactory.CreateDatabaseRepository(dbFactory, DatabaseConnectionString);
+            // var repository = repositoryFactory.CreateDatabaseRepository(dbFactory, DatabaseConnectionString);
+            var repository = ServiceProvider.GetRequiredService<ITranslationRepository>();
 
             // var res = await repository.AddTranslationAsync(new Translation("MyKey2", "en", "This is my key"));
             var translation = await repository.GetTranslationAsync(key: "MyKey", language: "en");

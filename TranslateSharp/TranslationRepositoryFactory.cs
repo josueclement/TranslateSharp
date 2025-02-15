@@ -8,7 +8,7 @@ namespace TranslateSharp;
 public interface ITranslationRepositoryFactory
 {
     ITranslationRepository CreateDatabaseRepository(DbProviderFactory factory, string connectionString);
-    ITranslationRepository CreateJsonFileRepository(string path);
+    ITranslationRepository CreateJsonFileRepository(string filePath);
 }
 
 public class TranslationRepositoryFactory : ITranslationRepositoryFactory
@@ -24,6 +24,6 @@ public class TranslationRepositoryFactory : ITranslationRepositoryFactory
     public ITranslationRepository CreateDatabaseRepository(DbProviderFactory factory, string connectionString)
         => ActivatorUtilities.CreateInstance<DatabaseTranslationRepository>(_serviceProvider, factory, connectionString);
 
-    public ITranslationRepository CreateJsonFileRepository(string path)
-        => throw new NotImplementedException();
+    public ITranslationRepository CreateJsonFileRepository(string filePath)
+        => ActivatorUtilities.CreateInstance<JsonFileTranslationRepository>(_serviceProvider, filePath);
 }
