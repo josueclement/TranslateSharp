@@ -14,33 +14,30 @@ public class TranslationService : ITranslationService
         _repository = repository;
     }
     
-    public Task<IEnumerable<Translation>> GetAllTranslationsAsync()
+    public async Task<IEnumerable<Translation>> GetAllTranslationsAsync()
+        => await _repository.GetAllTranslationsAsync();
+
+    public async Task<IEnumerable<Translation>> GetTranslationsAsync(string key)
+        => await _repository.GetTranslationsAsync(key);
+
+    public async Task<Translation?> GetTranslationAsync(string key, string language)
+        => await _repository.GetTranslationAsync(key, language);
+
+    public async Task<bool> AddTranslationAsync(Translation translation)
     {
-        throw new System.NotImplementedException();
+        var result = await _repository.AddTranslationAsync(translation);
+        return result > 0;
     }
 
-    public Task<IEnumerable<Translation>> GetTranslationsAsync(string key)
+    public async Task<bool> DeleteTranslationAsync(Translation translation)
     {
-        throw new System.NotImplementedException();
+        var result = await _repository.DeleteTranslationAsync(translation);
+        return result > 0;
     }
 
-    public Task<Translation?> GetTranslationAsync(string key, string language)
+    public async Task<bool> UpdateTranslationAsync(Translation translation)
     {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<bool> AddTranslationAsync(Translation translation)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<bool> DeleteTranslationAsync(Translation translation)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<bool> UpdateTranslationAsync(Translation translation)
-    {
-        throw new System.NotImplementedException();
+        var result = await _repository.UpdateTranslationAsync(translation);
+        return result > 0;
     }
 }

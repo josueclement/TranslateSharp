@@ -55,7 +55,7 @@ internal static class Program
                 sp.GetRequiredService<ITranslationRepositoryFactory>()
                     .CreateJsonFileRepository(configuration.GetRequiredValue<string>("TranslationRepositoryJsonFile")));
         }
-        // services.AddTransient<ITranslationRepository, DatabaseTranslationRepository>();
+        services.AddSingleton<ITranslationService, TranslationService>();
         _serviceProvider = services.BuildServiceProvider();
     }
 
@@ -77,16 +77,12 @@ internal static class Program
             
             DbProviderFactories.RegisterFactory(DatabaseProvider, DatabaseFactory);
             
-            var dbFactory = DbProviderFactories.GetFactory(DatabaseProvider);
-
-            var repositoryFactory = ServiceProvider.GetRequiredService<ITranslationRepositoryFactory>();
-            // var repository = repositoryFactory.CreateDatabaseRepository(dbFactory, DatabaseConnectionString);
-            var repository = ServiceProvider.GetRequiredService<ITranslationRepository>();
+            var service = ServiceProvider.GetRequiredService<ITranslationService>();
 
             // var res = await repository.AddTranslationAsync(new Translation("MyKey2", "en", "This is my key"));
-            var translation = await repository.GetTranslationAsync(key: "MyKey", language: "en");
+            var translation = await service.GetTranslationAsync(key: "MyKey", language: "en");
 
-            var translations = await repository.GetAllTranslationsAsync();
+            var translations = await service.GetAllTranslationsAsync();
         }
         catch (Exception ex)
         {
