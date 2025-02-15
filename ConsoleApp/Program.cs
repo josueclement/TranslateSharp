@@ -44,17 +44,21 @@ internal static class Program
         _serviceProvider = services.BuildServiceProvider();
     }
 
+    static void RegisterDatabase()
+    {
+        var configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+
+        DbProviderFactories.RegisterFactory(
+            configuration.GetRequiredValue<string>("Database:Provider"),
+            configuration.GetRequiredValue<string>("Database:Factory")); 
+    }
+
     static async Task Main()
     {
         try
         {
             ConfigureServices();
-            
-            var configuration = ServiceProvider.GetRequiredService<IConfiguration>();
-
-            DbProviderFactories.RegisterFactory(
-                configuration.GetRequiredValue<string>("Database:Provider"),
-                configuration.GetRequiredValue<string>("Database:Factory"));
+            RegisterDatabase();
             
             var service = ServiceProvider.GetRequiredService<ITranslationService>();
 

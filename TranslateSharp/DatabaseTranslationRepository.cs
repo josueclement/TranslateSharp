@@ -32,11 +32,8 @@ public class DatabaseTranslationRepository : ITranslationRepository
 
     protected virtual DbConnection GetConnection()
     {
-        var connection = _factory.CreateConnection();
-        
-        if (connection is null)
-            throw new InvalidOperationException("Database connection could not be created");
-        
+        var connection = _factory.CreateConnection() ??
+                         throw new InvalidOperationException("Database connection could not be created");
         connection.ConnectionString = _connectionString;
         return connection;
     }
