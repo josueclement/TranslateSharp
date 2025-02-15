@@ -16,21 +16,6 @@ internal static class Program
     public static IServiceProvider ServiceProvider =>
         _serviceProvider ?? throw new InvalidOperationException("ServiceProvider is not configured");
 
-    private static string? _databaseFactory;
-    // ReSharper disable once MemberCanBePrivate.Global
-    public static string DatabaseFactory =>
-        _databaseFactory ?? throw new InvalidOperationException("Database factory is not configured");
-
-    private static string? _databaseProvider;
-    // ReSharper disable once MemberCanBePrivate.Global
-    public static string DatabaseProvider =>
-        _databaseProvider ?? throw new InvalidOperationException("Database provider is not configured");
-    
-    private static string? _databaseConnectionString;
-    // ReSharper disable once MemberCanBePrivate.Global
-    public static string DatabaseConnectionString =>
-        _databaseConnectionString ?? throw new InvalidOperationException("Database connection string is not configured");
-
     static void ConfigureServices()
     {
         var configuration = new ConfigurationBuilder()
@@ -59,23 +44,17 @@ internal static class Program
         _serviceProvider = services.BuildServiceProvider();
     }
 
-    static void ReadConfiguration()
-    {
-        IConfiguration configuration = ServiceProvider.GetRequiredService<IConfiguration>();
-
-        _databaseFactory = configuration.GetValue<string>("Database:Factory");
-        _databaseProvider = configuration.GetValue<string>("Database:Provider");
-        _databaseConnectionString = configuration.GetValue<string>("Database:ConnectionString"); 
-    }
-
     static async Task Main()
     {
         try
         {
             ConfigureServices();
-            ReadConfiguration();
             
-            DbProviderFactories.RegisterFactory(DatabaseProvider, DatabaseFactory);
+            var configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+
+            DbProviderFactories.RegisterFactory(
+                configuration.GetRequiredValue<string>("Database:Provider"),
+                configuration.GetRequiredValue<string>("Database:Factory"));
             
             var service = ServiceProvider.GetRequiredService<ITranslationService>();
 
