@@ -19,11 +19,6 @@ public interface ITranslationService
     Task<IEnumerable<Translation>> GetTranslationsAsync(string key);
     
     /// <summary>
-    /// Asynchronously get translation by its key and language
-    /// </summary>
-    Task<Translation?> GetTranslationAsync(string key, string language);
-    
-    /// <summary>
     /// Asynchronously add a translation
     /// </summary>
     Task<bool> AddTranslationAsync(Translation translation);

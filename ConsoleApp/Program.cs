@@ -26,6 +26,8 @@ internal static class Program
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configuration);
         services.AddSingleton<ITranslationRepositoryFactory, TranslationRepositoryFactory>();
+        
+        // Add ITranslationRepository depending of the configuration
         if (configuration.GetValue<string>("General:TranslationRepositoryType") == "Database")
         {
             services.AddSingleton<ITranslationRepository>(sp =>
@@ -40,10 +42,14 @@ internal static class Program
                 sp.GetRequiredService<ITranslationRepositoryFactory>()
                     .CreateJsonFileRepository(configuration.GetRequiredValue<string>("TranslationRepositoryJsonFile")));
         }
+        
         services.AddSingleton<ITranslationService, TranslationService>();
         _serviceProvider = services.BuildServiceProvider();
     }
 
+    /// <summary>
+    /// Register database from configuration
+    /// </summary>
     static void RegisterDatabase()
     {
         var configuration = ServiceProvider.GetRequiredService<IConfiguration>();
@@ -63,9 +69,11 @@ internal static class Program
             var service = ServiceProvider.GetRequiredService<ITranslationService>();
 
             // var res = await repository.AddTranslationAsync(new Translation("MyKey2", "en", "This is my key"));
-            var translation = await service.GetTranslationAsync(key: "MyKey", language: "en");
+            // var translation = await service.GetTranslationAsync(key: "MyKey", language: "en");
 
             var translations = await service.GetAllTranslationsAsync();
+            await service.AddTranslationAsync(new Translation("Key3", "fr", "blah"));
+            var translations2 = await service.GetAllTranslationsAsync();
         }
         catch (Exception ex)
         {
