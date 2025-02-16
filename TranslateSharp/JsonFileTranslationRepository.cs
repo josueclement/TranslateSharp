@@ -4,6 +4,7 @@ using TranslateSharp.Abstractions;
 
 namespace TranslateSharp;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class JsonFileTranslationRepository : ITranslationRepository
 {
     private readonly string _filePath;
