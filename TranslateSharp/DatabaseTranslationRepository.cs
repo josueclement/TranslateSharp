@@ -21,28 +21,18 @@ namespace TranslateSharp;
 // ReSharper disable once ClassNeverInstantiated.Global
 public class DatabaseTranslationRepository : ITranslationRepository
 {
-    private readonly DbProviderFactory _factory;
-    private readonly string _connectionString;
+    private readonly Func<DbConnection> _connectionFactory;
 
     // ReSharper disable once ConvertToPrimaryConstructor
-    public DatabaseTranslationRepository(DbProviderFactory factory, string connectionString)
+    public DatabaseTranslationRepository(Func<DbConnection> connectionFactory)
     {
-        _connectionString = connectionString;
-        _factory = factory;
-    }
-
-    protected virtual DbConnection GetConnection()
-    {
-        var connection = _factory.CreateConnection() ??
-                         throw new InvalidOperationException("Database connection could not be created");
-        connection.ConnectionString = _connectionString;
-        return connection;
+        _connectionFactory = connectionFactory;
     }
 
     /// <inheritdoc />
     public async Task<IEnumerable<Translation>> GetAllTranslationsAsync()
     {
-        var connection = GetConnection();
+        var connection = _connectionFactory();
         await using (connection.ConfigureAwait(false))
         {
             await connection.OpenAsync().ConfigureAwait(false); 
@@ -55,7 +45,7 @@ public class DatabaseTranslationRepository : ITranslationRepository
     /// <inheritdoc />
     public async Task<IEnumerable<Translation>> GetTranslationsAsync(string key)
     {
-        var connection = GetConnection();
+        var connection = _connectionFactory();
         await using (connection.ConfigureAwait(false))
         {
             await connection.OpenAsync().ConfigureAwait(false);
@@ -68,7 +58,7 @@ public class DatabaseTranslationRepository : ITranslationRepository
     /// <inheritdoc />
     public async Task<Translation?> GetTranslationAsync(string key, string language)
     {
-        var connection = GetConnection();
+        var connection = _connectionFactory();
         await using (connection.ConfigureAwait(false))
         {
             await connection.OpenAsync().ConfigureAwait(false);
@@ -86,7 +76,7 @@ public class DatabaseTranslationRepository : ITranslationRepository
     /// <inheritdoc />
     public async Task<int> AddTranslationAsync(Translation translation)
     {
-        var connection = GetConnection();
+        var connection = _connectionFactory();
         await using (connection.ConfigureAwait(false))
         {
             await connection.OpenAsync().ConfigureAwait(false);
@@ -99,7 +89,7 @@ public class DatabaseTranslationRepository : ITranslationRepository
     /// <inheritdoc />
     public async Task<int> DeleteTranslationAsync(Translation translation)
     {
-        var connection = GetConnection();
+        var connection = _connectionFactory();
         await using (connection.ConfigureAwait(false))
         {
             await connection.OpenAsync().ConfigureAwait(false);
@@ -112,7 +102,7 @@ public class DatabaseTranslationRepository : ITranslationRepository
     /// <inheritdoc />
     public async Task<int> UpdateTranslationAsync(Translation translation)
     {
-        var connection = GetConnection();
+        var connection = _connectionFactory();
         await using (connection.ConfigureAwait(false))
         {
             await connection.OpenAsync().ConfigureAwait(false);

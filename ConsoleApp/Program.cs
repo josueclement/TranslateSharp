@@ -32,9 +32,9 @@ internal static class Program
         {
             services.AddSingleton<ITranslationRepository>(sp =>
                 sp.GetRequiredService<ITranslationRepositoryFactory>()
-                    .CreateDatabaseRepository(
-                        DbProviderFactories.GetFactory(configuration.GetRequiredValue<string>("Database:Provider")),
-                        configuration.GetRequiredValue<string>("Database:ConnectionString")));
+                    .CreateDatabaseRepository(() =>
+                        GetConnection(configuration.GetRequiredValue<string>("Database:Provider"),
+                            configuration.GetRequiredValue<string>("Database:ConnectionString"))));
         }
         else if (configuration.GetValue<string>("General:TranslationRepositoryType") == "JsonFile")
         {
@@ -45,6 +45,14 @@ internal static class Program
         
         services.AddSingleton<ITranslationService, TranslationService>();
         _serviceProvider = services.BuildServiceProvider();
+    }
+
+    private static DbConnection GetConnection(string provider, string connectionString)
+    {
+        var connection = DbProviderFactories.GetFactory(provider).CreateConnection() ??
+                         throw new InvalidOperationException($"Cannot create DbConnection from provider: {provider}");
+        connection.ConnectionString = connectionString;
+        return connection; 
     }
 
     /// <summary>
@@ -72,7 +80,7 @@ internal static class Program
             // var translation = await service.GetTranslationAsync(key: "MyKey", language: "en");
 
             var translations = await service.GetAllTranslationsAsync();
-            await service.AddTranslationAsync(new Translation("Key3", "fr", "blah"));
+            await service.AddTranslationAsync(new Translation("Key4", "fr", "blah"));
             var translations2 = await service.GetAllTranslationsAsync();
         }
         catch (Exception ex)
