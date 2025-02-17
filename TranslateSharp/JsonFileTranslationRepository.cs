@@ -1,9 +1,16 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TranslateSharp.Abstractions;
 
 namespace TranslateSharp;
 
+/// <summary>
+/// Json file repository implementation
+/// </summary>
 // ReSharper disable once ClassNeverInstantiated.Global
 public class JsonFileTranslationRepository : ITranslationRepository
 {
@@ -15,33 +22,88 @@ public class JsonFileTranslationRepository : ITranslationRepository
         _filePath = filePath;
     }
     
-    public Task<IEnumerable<Translation>> GetAllTranslationsAsync()
+    /// <inheritdoc />
+    public async Task<IEnumerable<Translation>> GetAllTranslationsAsync()
     {
-        throw new System.NotImplementedException();
+        var fs = new FileStream(_filePath, FileMode.Open, FileAccess.Read);
+        await using (fs.ConfigureAwait(false))
+        {
+            using (var sr = new StreamReader(fs, Encoding.UTF8))
+            {
+                var json = await sr.ReadToEndAsync().ConfigureAwait(false);
+                return JsonConvert.DeserializeObject<List<Translation>>(json) ?? Enumerable.Empty<Translation>();
+            }
+        }
     }
 
-    public Task<IEnumerable<Translation>> GetTranslationsAsync(string key)
+    /// <inheritdoc />
+    public async Task<IEnumerable<Translation>> GetTranslationsAsync(string key)
     {
-        throw new System.NotImplementedException();
+        var translations = await GetAllTranslationsAsync().ConfigureAwait(false);
+        return translations.Where(t => t.Key == key);
     }
 
-    public Task<Translation?> GetTranslationAsync(string key, string language)
+    /// <inheritdoc />
+    public async Task<Translation?> GetTranslationAsync(string key, string language)
     {
-        throw new System.NotImplementedException();
+        var translations = await GetAllTranslationsAsync().ConfigureAwait(false);
+        return translations.FirstOrDefault(t => t.Key == key && t.Language == language);
     }
 
-    public Task<int> AddTranslationAsync(Translation translation)
+    /// <inheritdoc />
+    public async Task<int> AddTranslationAsync(Translation translation)
     {
-        throw new System.NotImplementedException();
+        var translations = new List<Translation>(await GetAllTranslationsAsync().ConfigureAwait(false)) { translation };
+
+        var fs = new FileStream(_filePath, FileMode.Create, FileAccess.Write);
+        await using (fs.ConfigureAwait(false))
+        {
+            await using (var sw = new StreamWriter(fs, Encoding.UTF8))
+            {
+                var json = JsonConvert.SerializeObject(translations);
+                await sw.WriteAsync(json).ConfigureAwait(false);
+            }
+        }
+
+        return 1;
     }
 
-    public Task<int> DeleteTranslationAsync(Translation translation)
+    /// <inheritdoc />
+    public async Task<int> DeleteTranslationAsync(Translation translation)
     {
-        throw new System.NotImplementedException();
+        var translations = new List<Translation>(await GetAllTranslationsAsync().ConfigureAwait(false));
+        var removed = translations.RemoveAll(x => x.Key == translation.Key && x.Language == translation.Language);
+        
+        var fs = new FileStream(_filePath, FileMode.Create, FileAccess.Write);
+        await using (fs.ConfigureAwait(false))
+        {
+            await using (var sw = new StreamWriter(fs, Encoding.UTF8))
+            {
+                var json = JsonConvert.SerializeObject(translations);
+                await sw.WriteAsync(json).ConfigureAwait(false);
+            }
+        }
+
+        return removed; 
     }
 
-    public Task<int> UpdateTranslationAsync(Translation translation)
+    /// <inheritdoc />
+    public async Task<int> UpdateTranslationAsync(Translation translation)
     {
-        throw new System.NotImplementedException();
+        var translations = new List<Translation>(await GetAllTranslationsAsync().ConfigureAwait(false));
+        var removed = translations.RemoveAll(x => x.Key == translation.Key && x.Language == translation.Language); 
+        translations.Add(translation);
+        
+        var fs = new FileStream(_filePath, FileMode.Create, FileAccess.Write);
+        await using (fs.ConfigureAwait(false))
+        {
+            await using (var sw = new StreamWriter(fs, Encoding.UTF8))
+            {
+                var json = JsonConvert.SerializeObject(translations);
+                await sw.WriteAsync(json).ConfigureAwait(false);
+            }
+        }
+
+        return removed; 
     }
 }

@@ -17,7 +17,6 @@ namespace TranslateSharp;
 /// <summary>
 /// Database translation repository implementation
 /// </summary>
-// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 // ReSharper disable once ClassNeverInstantiated.Global
 public class DatabaseTranslationRepository : ITranslationRepository
 {
