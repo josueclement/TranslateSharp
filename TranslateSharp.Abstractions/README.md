@@ -1,0 +1,2 @@
+# TranslateSharp.Abstractions
+~~~~
